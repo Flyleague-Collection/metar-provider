@@ -33,6 +33,29 @@ server:
     host: 0.0.0.0
     # 监听端口
     port: 8080
+    # 代理类型
+    proxy_type: 0
+    # 允许的代理IP地址
+    trust_ips:
+      - "0.0.0.0/0"
+    # SSL配置
+    ssl:
+      # 是否启用SSL
+      enable: false
+      # SSL证书文件
+      cert: ""
+      # SSL密钥文件
+      key: ""
+      # 是否强制使用SSL
+      force_https: false
+      # HSTS配置
+      hsts:
+        # 是否启用HSTS
+        enable: false
+        # HSTS过期时间（秒）
+        max_age: 5184000
+        # 是否包含子域名
+        include_subdomains: false
   # grpc服务配置
   grpc:
     # 是否启动
