@@ -30,11 +30,11 @@ func (m *Metar) QueryMetar(ctx echo.Context) error {
 	data := &dto.QueryMetar{}
 
 	if err := ctx.Bind(data); err != nil {
-		m.logger.Errorf("QueryMetar bind param error: %v", err)
+		m.logger.Errorf("QueryMetar bind param error: %+v", err)
 		return dto.ErrorResponse(ctx, dto.ErrErrorParam)
 	}
 
-	m.logger.Debugf("QueryMetar called with args: %v", data)
+	m.logger.Debugf("QueryMetar called with args: %+v", data)
 
 	icaos := strings.Split(data.ICAO, ",")
 
@@ -43,11 +43,13 @@ func (m *Metar) QueryMetar(ctx echo.Context) error {
 		return dto.ErrorResponse(ctx, dto.ErrInvalidParam)
 	}
 
-	if len(icaos) == 1 {
-		return m.service.QueryMetar(icaos[0]).Response(ctx)
-	}
+	var res *dto.ApiResponse[[]string]
 
-	res := m.service.BatchQueryMetar(icaos)
+	if len(icaos) == 1 {
+		res = m.service.QueryMetar(icaos[0])
+	} else {
+		res = m.service.BatchQueryMetar(icaos)
+	}
 
 	if !data.Raw || res.Data == nil {
 		return res.Response(ctx)
@@ -60,11 +62,11 @@ func (m *Metar) QueryTaf(ctx echo.Context) error {
 	data := &dto.QueryTaf{}
 
 	if err := ctx.Bind(data); err != nil {
-		m.logger.Errorf("QueryTaf bind param error: %v", err)
+		m.logger.Errorf("QueryTaf bind param error: %+v", err)
 		return dto.ErrorResponse(ctx, dto.ErrErrorParam)
 	}
 
-	m.logger.Debugf("QueryTaf called with args: %v", data)
+	m.logger.Debugf("QueryTaf called with args: %+v", data)
 
 	icaos := strings.Split(data.ICAO, ",")
 
@@ -73,11 +75,13 @@ func (m *Metar) QueryTaf(ctx echo.Context) error {
 		return dto.ErrorResponse(ctx, dto.ErrInvalidParam)
 	}
 
-	if len(icaos) == 1 {
-		return m.service.QueryTaf(icaos[0]).Response(ctx)
-	}
+	var res *dto.ApiResponse[[]string]
 
-	res := m.service.BatchQueryTaf(icaos)
+	if len(icaos) == 1 {
+		res = m.service.QueryTaf(icaos[0])
+	} else {
+		res = m.service.BatchQueryTaf(icaos)
+	}
 
 	if !data.Raw || res.Data == nil {
 		return res.Response(ctx)

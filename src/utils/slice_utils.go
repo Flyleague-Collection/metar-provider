@@ -1,44 +1,6 @@
 // Package utils
 package utils
 
-type SliceOperation[T comparable] struct {
-	value []T
-}
-
-func NewSliceOperation[T comparable](src []T) *SliceOperation[T] {
-	return &SliceOperation[T]{src}
-}
-
-func (operation *SliceOperation[T]) Append(element T) *SliceOperation[T] {
-	operation.value = append(operation.value, element)
-	return operation
-}
-
-func (operation *SliceOperation[T]) Clone() *SliceOperation[T] {
-	return NewSliceOperation(operation.value)
-}
-
-func (operation *SliceOperation[T]) Value() []T { return operation.value }
-
-func (operation *SliceOperation[T]) Find(comparator func(element T) bool) T {
-	return Find(operation.value, comparator)
-}
-
-func (operation *SliceOperation[T]) Filter(filter func(element T) bool) *SliceOperation[T] {
-	operation.value = Filter(operation.value, filter)
-	return operation
-}
-
-func (operation *SliceOperation[T]) Map(mapper func(element T)) *SliceOperation[T] {
-	Map(operation.value, mapper)
-	return operation
-}
-
-func (operation *SliceOperation[T]) ForEach(callback func(index int, element T)) *SliceOperation[T] {
-	ForEach(operation.value, callback)
-	return operation
-}
-
 func ReverseForEach[T comparable](slice []T, f func(index int, value T)) {
 	for i := len(slice) - 1; i >= 0; i-- {
 		f(i, slice[i])
@@ -74,9 +36,9 @@ func Filter[T comparable](src []T, filter func(element T) bool) (result []T) {
 	return
 }
 
-func Map[T comparable](src []T, mapper func(element T)) {
-	for _, v := range src {
-		mapper(v)
+func Map[T comparable](src []T, mapper func(element T) T) {
+	for i := range src {
+		src[i] = mapper(src[i])
 	}
 }
 

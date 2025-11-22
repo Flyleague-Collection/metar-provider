@@ -65,6 +65,8 @@ type HttpServerConfig struct {
 	Enable    bool       `yaml:"enable"`
 	Host      string     `yaml:"host"`
 	Port      int        `yaml:"port"`
+	BodyLimit string     `yaml:"body_limit"`
+	RateLimit int        `yaml:"rate_limit"`
 	ProxyType int        `yaml:"proxy_type"`
 	TrustIps  []string   `yaml:"trust_ips"`
 	SSLConfig *SSLConfig `yaml:"ssl"`
@@ -75,6 +77,8 @@ func defaultHttpServerConfig() *HttpServerConfig {
 		Enable:    true,
 		Host:      "0.0.0.0",
 		Port:      8080,
+		BodyLimit: "5M",
+		RateLimit: 20,
 		ProxyType: 0,
 		TrustIps:  []string{"0.0.0.0/0"},
 		SSLConfig: defaultSSLConfig(),
@@ -96,6 +100,9 @@ func (h *HttpServerConfig) Verify() (bool, error) {
 	}
 	if h.ProxyType < 0 || h.ProxyType > 2 {
 		return false, fmt.Errorf("proxy_type must be 0, 1 or 2")
+	}
+	if h.RateLimit < 0 {
+		return false, fmt.Errorf("rate_limit must be positive")
 	}
 	if ok, err := h.SSLConfig.Verify(); !ok {
 		return false, err

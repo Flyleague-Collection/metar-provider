@@ -2,7 +2,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"metar-provider/src/interfaces/metar"
 	decoderImpl "metar-provider/src/metar/decoder"
@@ -45,20 +44,20 @@ func (p *ProviderConfig) Verify() (bool, error) {
 	}
 	providerType := strings.ToLower(p.Type)
 	if !ProviderTypes.IsValidEnum(providerType) {
-		return false, errors.New("type is not supported")
+		return false, fmt.Errorf("type is not supported")
 	}
 	if p.Name == "" {
 		return false, fmt.Errorf("name is required")
 	}
 	if p.Target == "" {
-		return false, fmt.Errorf("target is required")
+		return false, fmt.Errorf("source %s error: target is required", p.Name)
 	}
 	if p.Decoder == "" {
-		return false, fmt.Errorf("parser is required")
+		return false, fmt.Errorf("source %s error: decoder is required", p.Name)
 	}
 	parser := strings.ToLower(p.Decoder)
 	if !DecoderTypes.IsValidEnum(parser) {
-		return false, errors.New("parser is not supported")
+		return false, fmt.Errorf("source %s error: decoder is not supported", p.Name)
 	}
 	switch parser {
 	case DecoderTypeHtml.Value:

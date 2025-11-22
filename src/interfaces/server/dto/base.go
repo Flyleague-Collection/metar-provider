@@ -12,6 +12,7 @@ const (
 	HttpCodePermissionDenied HttpCode = 403
 	HttpCodeNotFound         HttpCode = 404
 	HttpCodeConflict         HttpCode = 409
+	HttpCodeTooManyRequests  HttpCode = 429
 	HttpCodeInternalError    HttpCode = 500
 )
 

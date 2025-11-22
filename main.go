@@ -23,6 +23,8 @@ func main() {
 	global.CheckStringEnv(global.EnvConfigFilePath, global.ConfigFilePath)
 	global.CheckIntEnv(global.EnvQueryThread, global.QueryThread, 16)
 	global.CheckDurationEnv(global.EnvCacheCleanInterval, global.CacheCleanInterval)
+	global.CheckDurationEnv(global.EnvRequestTimeout, global.RequestTimeout)
+	global.CheckIntEnv(global.EnvGzipLevel, global.GzipLevel, 5)
 
 	configManager := configImpl.NewManager()
 	if err := configManager.Init(); err != nil {

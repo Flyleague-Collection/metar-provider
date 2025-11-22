@@ -10,7 +10,9 @@ var (
 	ErrInvalidParam      = NewApiStatus("PARAM_INVALID", "非法参数", HttpCodeBadRequest)
 	ErrErrorParam        = NewApiStatus("PARAM_ERROR", "参数错误", HttpCodeBadRequest)
 	ErrServerError       = NewApiStatus("SERVER_ERROR", "服务器错误", HttpCodeInternalError)
-	SuccessHandleRequest = NewApiStatus("SUCCESS", "Success", HttpCodeOk)
+	ErrRateLimitExceeded = NewApiStatus("RATE_LIMIT_EXCEEDED", "请求频率过高", HttpCodeTooManyRequests)
+	ErrNoMatchRoute      = NewApiStatus("NO_MATCH_ROUTE", "未匹配到路由", HttpCodeNotFound)
+	SuccessHandleRequest = NewApiStatus("SUCCESS", "成功", HttpCodeOk)
 )
 
 func ErrorResponse(ctx echo.Context, codeStatus *ApiStatus) error {

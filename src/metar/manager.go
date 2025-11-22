@@ -8,6 +8,7 @@ import (
 	"metar-provider/src/interfaces/logger"
 	"metar-provider/src/interfaces/metar"
 	"metar-provider/src/utils"
+	"strings"
 	"sync"
 	"time"
 
@@ -67,7 +68,18 @@ func (m *Manager) Query(icao string) (string, error) {
 		return "", err
 	}
 
-	return result.(string), nil
+	// 将结果按行分割，去除空行，再重新组合成单行字符串
+	lines := strings.Split(result.(string), "\n")
+	nonEmptyLines := utils.Filter(lines, func(line string) bool {
+		return strings.TrimSpace(line) != ""
+	})
+	// 对每一行进行trim处理后再连接
+	utils.Map(nonEmptyLines, func(line string) string {
+		return strings.TrimSpace(line)
+	})
+	data := strings.Join(nonEmptyLines, " ")
+
+	return data, nil
 }
 
 func (m *Manager) BatchQuery(icaos []string) []string {
