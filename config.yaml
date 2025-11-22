@@ -49,9 +49,9 @@ provider:
     # 名称
     name: aviationweather
     # 目标地址
-    target: https://www.aviationweather.gov/metar/data?ids=%s
+    target: https://aviationweather.gov/api/data/metar?ids=%s
     # 解析器
-    parser: raw
+    decoder: raw
     # 选择器
     selector: ""
     # 是否翻转

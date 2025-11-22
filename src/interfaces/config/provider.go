@@ -2,8 +2,11 @@
 package config
 
 import (
+	"errors"
 	"fmt"
-	"slices"
+	"metar-provider/src/interfaces/metar"
+	decoderImpl "metar-provider/src/metar/decoder"
+	"metar-provider/src/utils"
 	"strings"
 )
 
@@ -11,47 +14,60 @@ type ProviderConfig struct {
 	Type      string `yaml:"type"`
 	Name      string `yaml:"name"`
 	Target    string `yaml:"target"`
-	Parser    string `yaml:"parser"`
+	Decoder   string `yaml:"decoder"`
 	Selector  string `yaml:"selector"`
 	Reverse   bool   `yaml:"reverse"`
 	Multiline string `yaml:"multiline"`
 }
 
-var types = []string{"metar"}
-var parsers = []string{"raw", "html", "json"}
+type ProviderType *utils.Enum[string, string]
+
+var (
+	ProviderTypeMetar ProviderType = utils.NewEnum("metar", "METAR")
+	ProviderTypeTaf   ProviderType = utils.NewEnum("taf", "TAF")
+)
+
+var ProviderTypes = utils.NewEnums(ProviderTypeMetar, ProviderTypeTaf)
+
+type DecoderType *utils.Enum[string, metar.DecoderInterface]
+
+var (
+	DecoderTypeRaw  DecoderType = utils.NewEnum[string, metar.DecoderInterface]("raw", &decoderImpl.RawDecoder{})
+	DecoderTypeHtml DecoderType = utils.NewEnum[string, metar.DecoderInterface]("html", &decoderImpl.HtmlDecoder{})
+	DecoderTypeJson DecoderType = utils.NewEnum[string, metar.DecoderInterface]("json", &decoderImpl.JsonDecoder{})
+)
+
+var DecoderTypes = utils.NewEnums(DecoderTypeRaw, DecoderTypeHtml, DecoderTypeJson)
 
 func (p *ProviderConfig) Verify() (bool, error) {
 	if p.Type == "" {
 		return false, fmt.Errorf("type is required")
 	}
 	providerType := strings.ToLower(p.Type)
-	if !slices.Contains(types, providerType) {
-		return false, fmt.Errorf("type is not supported, only [%s] are supported", strings.Join(types, ","))
+	if !ProviderTypes.IsValidEnum(providerType) {
+		return false, errors.New("type is not supported")
 	}
-	switch providerType {
-	case "metar":
-		if p.Name == "" {
-			return false, fmt.Errorf("name is required")
+	if p.Name == "" {
+		return false, fmt.Errorf("name is required")
+	}
+	if p.Target == "" {
+		return false, fmt.Errorf("target is required")
+	}
+	if p.Decoder == "" {
+		return false, fmt.Errorf("parser is required")
+	}
+	parser := strings.ToLower(p.Decoder)
+	if !DecoderTypes.IsValidEnum(parser) {
+		return false, errors.New("parser is not supported")
+	}
+	switch parser {
+	case DecoderTypeHtml.Value:
+		if p.Selector == "" {
+			return false, fmt.Errorf("provider %s with type 'html' need a selector", p.Name)
 		}
-		if p.Target == "" {
-			return false, fmt.Errorf("target is required")
-		}
-		if p.Parser == "" {
-			return false, fmt.Errorf("parser is required")
-		}
-		parser := strings.ToLower(p.Parser)
-		if !slices.Contains(parsers, parser) {
-			return false, fmt.Errorf("parser is not supported, only [%s] are supported", strings.Join(parsers, ","))
-		}
-		switch parser {
-		case "html":
-			if p.Selector == "" {
-				return false, fmt.Errorf("provider %s with type 'html' need a selector", p.Name)
-			}
-		case "json":
-			if p.Selector == "" {
-				return false, fmt.Errorf("provider %s with type 'json' need a selector", p.Name)
-			}
+	case DecoderTypeJson.Value:
+		if p.Selector == "" {
+			return false, fmt.Errorf("provider %s with type 'json' need a selector", p.Name)
 		}
 	}
 	return true, nil

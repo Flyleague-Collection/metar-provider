@@ -15,6 +15,7 @@ func main() {
 
 	global.CheckBoolEnv(global.EnvNoLogs, global.NoLogs)
 	global.CheckStringEnv(global.EnvConfigFilePath, global.ConfigFilePath)
+	global.CheckIntEnv(global.EnvQueryThread, global.QueryThread, 16)
 
 	configManager := configImpl.NewManager()
 	if err := configManager.Init(); err != nil {

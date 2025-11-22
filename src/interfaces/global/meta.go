@@ -8,6 +8,7 @@ import (
 var (
 	NoLogs         = flag.Bool("no_logs", false, "Disable logging to file")
 	ConfigFilePath = flag.String("config", "./config.yaml", "Path to configuration file")
+	QueryThread    = flag.Int("thread", 16, "Number of query threads")
 )
 
 const (
@@ -25,4 +26,5 @@ const (
 
 	EnvNoLogs         = "NO_LOGS"
 	EnvConfigFilePath = "CONFIG_FILE_PATH"
+	EnvQueryThread    = "QUERY_THREAD"
 )

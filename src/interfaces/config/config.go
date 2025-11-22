@@ -21,8 +21,8 @@ func NewConfig() *Config {
 			{
 				Type:      "metar",
 				Name:      "aviationweather",
-				Target:    "https://www.aviationweather.gov/metar/data?ids=%s",
-				Parser:    "raw",
+				Target:    "https://aviationweather.gov/api/data/metar?ids=%s",
+				Decoder:   "raw",
 				Selector:  "",
 				Reverse:   false,
 				Multiline: "",

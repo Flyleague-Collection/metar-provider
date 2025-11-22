@@ -3,6 +3,7 @@ package global
 
 import (
 	"context"
+	"metar-provider/src/utils"
 	"os"
 	"strconv"
 )
@@ -22,5 +23,12 @@ func CheckStringEnv(envKey string, target *string) {
 	value := os.Getenv(envKey)
 	if value != "" {
 		*target = value
+	}
+}
+
+func CheckIntEnv(envKey string, target *int, defaultValue int) {
+	value := os.Getenv(envKey)
+	if value != "" {
+		*target = utils.StrToInt(value, defaultValue)
 	}
 }
