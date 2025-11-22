@@ -1,0 +1,21 @@
+services:
+  # 服务名
+  metar-provider:
+    # 使用的镜像
+    image: halfnothing/metar-provider:0.1.0
+    # 容器名称
+    container_name: metar-provider
+    # 容器网络模式, 当模式为host的时候ports设置无效
+    # 仅当程序需要获取到客户端真实IP的时候需要开启
+    # network_mode: host
+    # 端口映射
+    # 宿主机端口:容器端口
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    # 挂载卷列表
+    volumes:
+      - ./logs:/metar-provider/logs
+      - ./config.yaml:/metar-provider/config.yaml
+    # 重启模式
+    restart: always

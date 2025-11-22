@@ -3,7 +3,7 @@ global:
   # 服务名称
   name: metar-provider
   # 配置文件版本
-  version: 1.0.0
+  version: 0.1.0
   # 日志配置
   log:
     # 日志级别
