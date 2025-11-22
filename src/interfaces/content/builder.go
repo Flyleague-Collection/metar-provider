@@ -38,6 +38,11 @@ func (builder *ApplicationContentBuilder) SetMetarManager(metarManager metar.Man
 	return builder
 }
 
+func (builder *ApplicationContentBuilder) SetTafManager(tafManager metar.ManagerInterface) *ApplicationContentBuilder {
+	builder.content.tafManager = tafManager
+	return builder
+}
+
 func (builder *ApplicationContentBuilder) Build() *ApplicationContent {
 	return builder.content
 }
