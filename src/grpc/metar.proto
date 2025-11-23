@@ -1,0 +1,26 @@
+edition = "2023";
+
+option go_package = "src/grpc";
+
+package metar;
+
+message MetarQuery {
+  repeated string icao = 1;
+}
+
+message MetarReply {
+  repeated string metar = 1;
+}
+
+message TafQuery {
+  repeated string icao = 1;
+}
+
+message TafReply {
+  repeated string taf = 1;
+}
+
+service MetarService {
+  rpc GetMetar(MetarQuery) returns (MetarReply);
+  rpc GetTaf(TafQuery) returns (TafReply);
+}
