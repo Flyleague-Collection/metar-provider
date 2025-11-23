@@ -133,11 +133,7 @@ func StartServer(content *content.ApplicationContent) {
 
 	content.Cleaner().Add("Http Server", func(e *echo.Echo) cleaner.ShutdownCallback {
 		return func(ctx context.Context) error {
-			// TODO: 会导致后续清理流程中断，原因未知
-			// timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-			// defer cancel()
-			// return e.Shutdown(timeoutCtx)
-			return nil
+			return e.Shutdown(ctx)
 		}
 	}(e))
 

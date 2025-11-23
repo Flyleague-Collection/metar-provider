@@ -57,7 +57,6 @@ func main() {
 
 	cleaner := cleanerImpl.NewCleaner(logger)
 	cleaner.Init()
-	defer cleaner.Clean()
 
 	metarManagerMemoryCache := cache.NewMemoryCache[*string](*global.CacheCleanInterval)
 	cleaner.Add("Metar Cache", func(ctx context.Context) error {
@@ -128,5 +127,7 @@ func main() {
 		}()
 	}
 
-	server.StartServer(applicationContent)
+	go server.StartServer(applicationContent)
+
+	cleaner.Wait()
 }

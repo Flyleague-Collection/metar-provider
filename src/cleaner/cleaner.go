@@ -25,6 +25,7 @@ type Cleaner struct {
 	cleaning       bool                     // 标识是否正在进行清理
 	loggerShutdown cleaner.ShutdownCallback // 日志系统关闭回调
 	logger         logger.Interface         // 日志接口
+	cleanFinished  chan struct{}
 }
 
 // NewCleaner 创建一个新的Cleaner实例
@@ -33,6 +34,7 @@ func NewCleaner(logger logger.Interface) *Cleaner {
 		cleaners:       make([]*shutdownFunc, 0),
 		loggerShutdown: logger.ShutdownCallback,
 		logger:         logger,
+		cleanFinished:  make(chan struct{}),
 	}
 }
 
@@ -116,7 +118,7 @@ func (c *Cleaner) Clean() {
 		_, _ = fmt.Fprintf(os.Stderr, "LOGGER SHUTDOWN ERROR: %v\n", err)
 	}
 
-	syscall.Exit(0)
+	close(c.cleanFinished)
 }
 
 // Init 初始化信号监听器，监听中断信号(SIGINT, SIGTERM)
@@ -132,4 +134,8 @@ func (c *Cleaner) Init() {
 		c.logger.Info("Received interrupt signal, shutting down")
 		c.Clean() // 执行清理
 	}()
+}
+
+func (c *Cleaner) Wait() {
+	<-c.cleanFinished
 }
