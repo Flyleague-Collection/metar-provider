@@ -2,12 +2,14 @@
 package cleaner
 
 import (
-	"metar-provider/src/interfaces/global"
+	"context"
 )
+
+type ShutdownCallback func(ctx context.Context) error
 
 // Interface 定义了清理器接口，用于初始化、添加和执行清理操作
 type Interface interface {
 	Init()
-	Add(callable global.Callable)
+	Add(name string, callback ShutdownCallback)
 	Clean()
 }

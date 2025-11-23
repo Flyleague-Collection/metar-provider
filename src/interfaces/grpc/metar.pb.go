@@ -211,11 +211,10 @@ const file_metar_proto_rawDesc = "" +
 	"\bTafQuery\x12\x12\n" +
 	"\x04icao\x18\x01 \x03(\tR\x04icao\"\x1c\n" +
 	"\bTafReply\x12\x10\n" +
-	"\x03taf\x18\x01 \x03(\tR\x03taf2l\n" +
-	"\fMetarService\x120\n" +
+	"\x03taf\x18\x01 \x03(\tR\x03taf2e\n" +
+	"\x05Metar\x120\n" +
 	"\bGetMetar\x12\x11.metar.MetarQuery\x1a\x11.metar.MetarReply\x12*\n" +
-	"\x06GetTaf\x12\x0f.metar.TafQuery\x1a\x0f.metar.TafReplyB\n" +
-	"Z\bsrc/grpcb\beditionsp\xe8\a"
+	"\x06GetTaf\x12\x0f.metar.TafQuery\x1a\x0f.metar.TafReplyB\x15Z\x13src/interfaces/grpcb\beditionsp\xe8\a"
 
 var (
 	file_metar_proto_rawDescOnce sync.Once
@@ -237,10 +236,10 @@ var file_metar_proto_goTypes = []any{
 	(*TafReply)(nil),   // 3: metar.TafReply
 }
 var file_metar_proto_depIdxs = []int32{
-	0, // 0: metar.MetarService.GetMetar:input_type -> metar.MetarQuery
-	2, // 1: metar.MetarService.GetTaf:input_type -> metar.TafQuery
-	1, // 2: metar.MetarService.GetMetar:output_type -> metar.MetarReply
-	3, // 3: metar.MetarService.GetTaf:output_type -> metar.TafReply
+	0, // 0: metar.Metar.GetMetar:input_type -> metar.MetarQuery
+	2, // 1: metar.Metar.GetTaf:input_type -> metar.TafQuery
+	1, // 2: metar.Metar.GetMetar:output_type -> metar.MetarReply
+	3, // 3: metar.Metar.GetTaf:output_type -> metar.TafReply
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

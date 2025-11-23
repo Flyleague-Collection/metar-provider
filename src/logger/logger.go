@@ -173,29 +173,17 @@ func (h *AsyncHandler) Close() error {
 	return nil
 }
 
-// ShutdownCallback 关闭回调结构体
-type ShutdownCallback struct {
+// Logger 日志记录器封装结构体
+type Logger struct {
 	handler *AsyncHandler
-}
-
-// Invoke 实现 Callable 接口，用于程序关闭时清理资源
-func (lc *ShutdownCallback) Invoke(_ context.Context) error {
-	return lc.handler.Close()
+	logger  *slog.Logger
 }
 
 // NewLogger 创建新的日志记录器实例
 func NewLogger() *Logger {
 	return &Logger{
-		logger:           nil,
-		shutdownCallback: nil,
+		logger: nil,
 	}
-}
-
-// Logger 日志记录器封装结构体
-type Logger struct {
-	handler          *AsyncHandler
-	logger           *slog.Logger
-	shutdownCallback *ShutdownCallback
 }
 
 // Init 初始化日志记录器
@@ -221,14 +209,12 @@ func (lg *Logger) Init(logPath, logName, logLevel string, logConfig *config.LogC
 
 	lg.logger = slog.New(lg.handler)
 
-	lg.shutdownCallback = &ShutdownCallback{handler: lg.handler}
-
 	lg.Debugf("%s logger initialized", strings.ToUpper(logName))
 }
 
 // ShutdownCallback 获取关闭回调
-func (lg *Logger) ShutdownCallback() global.Callable {
-	return lg.shutdownCallback
+func (lg *Logger) ShutdownCallback(context.Context) error {
+	return lg.handler.Close()
 }
 
 // LogHandler 获取底层 slog.Logger 实例

@@ -2,10 +2,10 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/global"
 )
 
 type Decorator struct {
@@ -27,8 +27,8 @@ func (loggerDecorator *Decorator) Init(logPath, logName, logLevel string, logCon
 	loggerDecorator.logger.Init(logPath, logName, logLevel, logConfig)
 }
 
-func (loggerDecorator *Decorator) ShutdownCallback() global.Callable {
-	return loggerDecorator.logger.ShutdownCallback()
+func (loggerDecorator *Decorator) ShutdownCallback(ctx context.Context) error {
+	return loggerDecorator.logger.ShutdownCallback(ctx)
 }
 
 func (loggerDecorator *Decorator) LogHandler() *slog.Logger {

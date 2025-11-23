@@ -2,14 +2,14 @@
 package logger
 
 import (
+	"context"
 	"log/slog"
 	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/global"
 )
 
 type Interface interface {
 	Init(logPath, logName, logLevel string, logConfig *config.LogConfig)
-	ShutdownCallback() global.Callable
+	ShutdownCallback(ctx context.Context) error
 	LogHandler() *slog.Logger
 	Debug(msg string)
 	Debugf(msg string, v ...interface{})

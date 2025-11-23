@@ -3,7 +3,7 @@ package base
 import (
 	"context"
 	"fmt"
-	"metar-provider/src/interfaces/global"
+	"metar-provider/src/interfaces/cleaner"
 	"metar-provider/src/interfaces/logger"
 	"metar-provider/src/utils"
 	"os"
@@ -13,27 +13,32 @@ import (
 	"time"
 )
 
+type shutdownFunc struct {
+	callback cleaner.ShutdownCallback
+	name     string
+}
+
 // Cleaner 负责管理应用关闭时需要执行的清理任务
 type Cleaner struct {
-	cleaners       []global.Callable // 需要执行的清理函数列表
-	mu             sync.Mutex        // 保护cleaners和cleaning状态的互斥锁
-	cleaning       bool              // 标识是否正在进行清理
-	loggerShutdown global.Callable   // 日志系统关闭回调
-	logger         logger.Interface  // 日志接口
+	cleaners       []*shutdownFunc          // 需要执行的清理函数列表
+	mu             sync.Mutex               // 保护cleaners和cleaning状态的互斥锁
+	cleaning       bool                     // 标识是否正在进行清理
+	loggerShutdown cleaner.ShutdownCallback // 日志系统关闭回调
+	logger         logger.Interface         // 日志接口
 }
 
 // NewCleaner 创建一个新的Cleaner实例
 func NewCleaner(logger logger.Interface) *Cleaner {
 	return &Cleaner{
-		cleaners:       make([]global.Callable, 0),
-		loggerShutdown: logger.ShutdownCallback(),
+		cleaners:       make([]*shutdownFunc, 0),
+		loggerShutdown: logger.ShutdownCallback,
 		logger:         logger,
 	}
 }
 
 // Add 添加一个清理函数到清理队列中
 // 如果清理已经开始，则忽略新的清理函数
-func (c *Cleaner) Add(callable global.Callable) {
+func (c *Cleaner) Add(name string, callback cleaner.ShutdownCallback) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -44,8 +49,8 @@ func (c *Cleaner) Add(callable global.Callable) {
 	}
 
 	// 添加清理函数到队列
-	c.cleaners = append(c.cleaners, callable)
-	c.logger.Debugf("Adding cleaner #%d (%T)", len(c.cleaners), callable)
+	c.cleaners = append(c.cleaners, &shutdownFunc{callback: callback, name: name})
+	c.logger.Debugf("Adding cleaner #%d %s(%p)", len(c.cleaners), name, callback)
 }
 
 // Clean 执行所有已注册的清理函数
@@ -58,7 +63,7 @@ func (c *Cleaner) Clean() {
 		return
 	}
 	c.cleaning = true // 标记为清理中，阻止后续Add操作
-	cleanersCopy := make([]global.Callable, len(c.cleaners))
+	cleanersCopy := make([]*shutdownFunc, len(c.cleaners))
 	copy(cleanersCopy, c.cleaners)
 	c.mu.Unlock()
 
@@ -66,17 +71,30 @@ func (c *Cleaner) Clean() {
 
 	// 执行所有清理函数并收集错误
 	var errs []error
-	utils.ReverseForEach(cleanersCopy, func(idx int, callback global.Callable) {
-		c.logger.Debugf("Invoking cleaner #%d (%T)", idx+1, callback)
+	utils.ReverseForEach(cleanersCopy, func(idx int, sf *shutdownFunc) {
+		c.logger.Debugf("Invoking cleaner #%d (%s)", idx+1, sf.name)
 
 		// 为每个清理函数设置10秒超时
 		timeoutCtx, cancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancelFunc()
 
-		// 执行清理函数并处理错误
-		if err := callback.Invoke(timeoutCtx); err != nil {
-			c.logger.Errorf("Cleaner #%d (%T) failed: %v", idx+1, callback, err)
-			errs = append(errs, err)
+		// 在单独的goroutine中执行清理函数，防止某个清理函数阻塞整个清理过程
+		done := make(chan error, 1)
+		go func() {
+			done <- sf.callback(timeoutCtx)
+		}()
+
+		// 等待清理函数完成或超时
+		select {
+		case err := <-done:
+			// 执行清理函数并处理错误
+			if err != nil {
+				c.logger.Errorf("Cleaner #%d (%s) failed: %v", idx+1, sf.name, err)
+				errs = append(errs, err)
+			}
+		case <-timeoutCtx.Done():
+			c.logger.Errorf("Cleaner #%d (%s) timed out", idx+1, sf.name)
+			errs = append(errs, timeoutCtx.Err())
 		}
 	})
 
@@ -94,7 +112,7 @@ func (c *Cleaner) Clean() {
 	// 关闭日志系统
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := c.loggerShutdown.Invoke(shutdownCtx); err != nil {
+	if err := c.loggerShutdown(shutdownCtx); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "LOGGER SHUTDOWN ERROR: %v\n", err)
 	}
 

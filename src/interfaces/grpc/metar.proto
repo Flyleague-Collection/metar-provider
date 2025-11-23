@@ -1,6 +1,6 @@
 edition = "2023";
 
-option go_package = "src/grpc";
+option go_package = "src/interfaces/grpc";
 
 package metar;
 
@@ -20,7 +20,7 @@ message TafReply {
   repeated string taf = 1;
 }
 
-service MetarService {
+service Metar {
   rpc GetMetar(MetarQuery) returns (MetarReply);
   rpc GetTaf(TafQuery) returns (TafReply);
 }

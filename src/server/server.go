@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"metar-provider/src/interfaces/cleaner"
 	"metar-provider/src/interfaces/content"
 	"metar-provider/src/interfaces/global"
 	"metar-provider/src/interfaces/server/dto"
@@ -130,7 +131,15 @@ func StartServer(content *content.ApplicationContent) {
 		return dto.ErrorResponse(c, dto.ErrNoMatchRoute)
 	})
 
-	content.Cleaner().Add(NewShutdownCallback(e))
+	content.Cleaner().Add("Http Server", func(e *echo.Echo) cleaner.ShutdownCallback {
+		return func(ctx context.Context) error {
+			// TODO: 会导致后续清理流程中断，原因未知
+			// timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			// defer cancel()
+			// return e.Shutdown(timeoutCtx)
+			return nil
+		}
+	}(e))
 
 	protocol := "http"
 	if httpConfig.SSLConfig.Enable {
@@ -153,20 +162,4 @@ func StartServer(content *content.ApplicationContent) {
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logger.Fatalf("Http server error: %v", err)
 	}
-}
-
-type ShutdownCallback struct {
-	serverHandler *echo.Echo
-}
-
-func NewShutdownCallback(serverHandler *echo.Echo) *ShutdownCallback {
-	return &ShutdownCallback{
-		serverHandler: serverHandler,
-	}
-}
-
-func (hc *ShutdownCallback) Invoke(ctx context.Context) error {
-	timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	return hc.serverHandler.Shutdown(timeoutCtx)
 }
