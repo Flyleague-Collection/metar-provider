@@ -2,22 +2,24 @@
 package content
 
 import (
-	"metar-provider/src/interfaces/cleaner"
-	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
+	c "metar-service/src/interfaces/config"
+	"metar-service/src/interfaces/metar"
+
+	"half-nothing.cn/service-core/interfaces/cleaner"
+	"half-nothing.cn/service-core/interfaces/config"
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 // ApplicationContent 应用程序上下文结构体，包含所有核心组件的接口
 type ApplicationContent struct {
-	configManager config.ManagerInterface // 配置管理器
-	cleaner       cleaner.Interface       // 清理器
-	logger        logger.Interface        // 日志
-	metarManager  metar.ManagerInterface  // METAR气象数据管理器
-	tafManager    metar.ManagerInterface  // TAF天气预报数据管理器
+	configManager config.ManagerInterface[*c.Config] // 配置管理器
+	cleaner       cleaner.Interface                  // 清理器
+	logger        logger.Interface                   // 日志
+	metarManager  metar.ManagerInterface             // METAR气象数据管理器
+	tafManager    metar.ManagerInterface             // TAF天气预报数据管理器
 }
 
-func (app *ApplicationContent) ConfigManager() config.ManagerInterface {
+func (app *ApplicationContent) ConfigManager() config.ManagerInterface[*c.Config] {
 	return app.configManager
 }
 

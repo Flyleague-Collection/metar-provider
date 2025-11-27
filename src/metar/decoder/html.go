@@ -17,7 +17,7 @@ func (h *HtmlDecoder) Decode(raw []byte, selector string, reverse bool, multilin
 	}
 	data := doc.Find(selector)
 	// 如果没有选取到元素
-	if data.Length() == 0 {
+	if data == nil || data.Length() == 0 {
 		return false, "", nil
 	}
 	// 如果只选取到了一个元素

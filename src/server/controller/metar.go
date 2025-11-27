@@ -3,12 +3,13 @@ package controller
 
 import (
 	"fmt"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/server/dto"
-	"metar-provider/src/interfaces/server/service"
+	DTO "metar-service/src/interfaces/server/dto"
+	"metar-service/src/interfaces/server/service"
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"half-nothing.cn/service-core/interfaces/http/dto"
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 type Metar struct {
@@ -27,7 +28,7 @@ func NewMetar(
 }
 
 func (m *Metar) QueryMetar(ctx echo.Context) error {
-	data := &dto.QueryMetar{}
+	data := &DTO.QueryMetar{}
 
 	if err := ctx.Bind(data); err != nil {
 		m.logger.Errorf("QueryMetar bind param error: %+v", err)
@@ -59,7 +60,7 @@ func (m *Metar) QueryMetar(ctx echo.Context) error {
 }
 
 func (m *Metar) QueryTaf(ctx echo.Context) error {
-	data := &dto.QueryTaf{}
+	data := &DTO.QueryTaf{}
 
 	if err := ctx.Bind(data); err != nil {
 		m.logger.Errorf("QueryTaf bind param error: %+v", err)

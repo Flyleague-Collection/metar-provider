@@ -3,12 +3,12 @@ package grpc
 
 import (
 	"context"
-	pb "metar-provider/src/interfaces/grpc"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
+	pb "metar-service/src/interfaces/grpc"
+	"metar-service/src/interfaces/metar"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 type MetarServer struct {

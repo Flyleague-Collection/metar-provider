@@ -7,8 +7,6 @@ import (
 )
 
 var (
-	NoLogs             = flag.Bool("no_logs", false, "Disable logging to file")
-	ConfigFilePath     = flag.String("config", "./config.yaml", "Path to configuration file")
 	QueryThread        = flag.Int("thread", 16, "Number of query threads")
 	CacheCleanInterval = flag.Duration("cache_clean_interval", 30*time.Minute, "cache cleanup interval")
 	RequestTimeout     = flag.Duration("request_timeout", 30*time.Second, "Request timeout")
@@ -16,18 +14,9 @@ var (
 )
 
 const (
-	AppVersion    = "0.2.0"
-	ConfigVersion = "0.2.0"
+	AppVersion    = "0.3.0"
+	ConfigVersion = "0.3.0"
 
-	BeginYear = 2025
-
-	DefaultFilePermissions     = 0644
-	DefaultDirectoryPermission = 0755
-
-	LogName = "MAIN"
-
-	EnvNoLogs             = "NO_LOGS"
-	EnvConfigFilePath     = "CONFIG_FILE_PATH"
 	EnvQueryThread        = "QUERY_THREAD"
 	EnvCacheCleanInterval = "CACHE_CLEAN_INTERVAL"
 	EnvRequestTimeout     = "REQUEST_TIMEOUT"

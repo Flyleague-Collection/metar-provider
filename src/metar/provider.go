@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
+	"metar-service/src/interfaces/config"
+	"metar-service/src/interfaces/metar"
 	"net/http"
+
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 type Provider struct {

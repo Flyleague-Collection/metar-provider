@@ -7,23 +7,22 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"metar-provider/src/interfaces/cleaner"
-	"metar-provider/src/interfaces/content"
-	"metar-provider/src/interfaces/global"
-	"metar-provider/src/interfaces/server/dto"
+	"metar-service/src/interfaces/content"
+	"metar-service/src/interfaces/global"
 	"net"
 	"net/http"
 	"time"
 
-	mid "metar-provider/src/server/middleware"
-
-	controllerImpl "metar-provider/src/server/controller"
-	serviceImpl "metar-provider/src/server/service"
+	controllerImpl "metar-service/src/server/controller"
+	serviceImpl "metar-service/src/server/service"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	slogecho "github.com/samber/slog-echo"
+	"half-nothing.cn/service-core/interfaces/cleaner"
+	"half-nothing.cn/service-core/interfaces/http/dto"
+	mid "half-nothing.cn/service-core/middleware"
 )
 
 func StartServer(content *content.ApplicationContent) {

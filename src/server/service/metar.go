@@ -3,9 +3,10 @@ package service
 
 import (
 	"errors"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
-	"metar-provider/src/interfaces/server/dto"
+	"metar-service/src/interfaces/metar"
+
+	"half-nothing.cn/service-core/interfaces/http/dto"
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 type Metar struct {

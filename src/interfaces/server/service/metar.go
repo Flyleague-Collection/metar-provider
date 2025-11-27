@@ -1,7 +1,9 @@
 // Package service
 package service
 
-import "metar-provider/src/interfaces/server/dto"
+import (
+	"half-nothing.cn/service-core/interfaces/http/dto"
+)
 
 type MetarInterface interface {
 	QueryMetar(icao string) *dto.ApiResponse[[]string]

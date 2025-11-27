@@ -2,92 +2,88 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"metar-provider/src/cache"
-	cleanerImpl "metar-provider/src/cleaner"
-	configImpl "metar-provider/src/config"
-	grpcImpl "metar-provider/src/grpc"
-	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/content"
-	"metar-provider/src/interfaces/global"
-	pb "metar-provider/src/interfaces/grpc"
-	loggerImpl "metar-provider/src/logger"
-	"metar-provider/src/metar"
-	"metar-provider/src/server"
-	"metar-provider/src/utils"
+	grpcImpl "metar-service/src/grpc"
+	c "metar-service/src/interfaces/config"
+	"metar-service/src/interfaces/content"
+	g "metar-service/src/interfaces/global"
+	pb "metar-service/src/interfaces/grpc"
+	"metar-service/src/metar"
+	"metar-service/src/server"
 	"net"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"half-nothing.cn/service-core/cache"
+	"half-nothing.cn/service-core/cleaner"
+	"half-nothing.cn/service-core/config"
+	"half-nothing.cn/service-core/discovery"
+	"half-nothing.cn/service-core/interfaces/global"
+	"half-nothing.cn/service-core/logger"
+	"half-nothing.cn/service-core/utils"
 )
 
 func main() {
-	flag.Parse()
+	global.CheckFlags()
+	global.CheckIntEnv(g.EnvQueryThread, g.QueryThread, 16)
+	global.CheckDurationEnv(g.EnvCacheCleanInterval, g.CacheCleanInterval)
+	global.CheckDurationEnv(g.EnvRequestTimeout, g.RequestTimeout)
+	global.CheckIntEnv(g.EnvGzipLevel, g.GzipLevel, 5)
 
-	global.CheckBoolEnv(global.EnvNoLogs, global.NoLogs)
-	global.CheckStringEnv(global.EnvConfigFilePath, global.ConfigFilePath)
-	global.CheckIntEnv(global.EnvQueryThread, global.QueryThread, 16)
-	global.CheckDurationEnv(global.EnvCacheCleanInterval, global.CacheCleanInterval)
-	global.CheckDurationEnv(global.EnvRequestTimeout, global.RequestTimeout)
-	global.CheckIntEnv(global.EnvGzipLevel, global.GzipLevel, 5)
-
-	configManager := configImpl.NewManager()
+	configManager := config.NewManager[*c.Config]()
 	if err := configManager.Init(); err != nil {
 		fmt.Printf("fail to initialize configuration file: %v", err)
 		return
 	}
 
 	applicationConfig := configManager.GetConfig()
-	logger := loggerImpl.NewLogger()
-	logger.Init(
-		applicationConfig.GlobalConfig.LogConfig.Path,
+	lg := logger.NewLogger()
+	lg.Init(
 		global.LogName,
-		applicationConfig.GlobalConfig.LogConfig.Level,
 		applicationConfig.GlobalConfig.LogConfig,
 	)
 
-	logger.Info(" _____     _           _____             _   _")
-	logger.Info("|     |___| |_ ___ ___|  _  |___ ___ _ _|_|_| |___ ___")
-	logger.Info("| | | | -_|  _| .'|  _|   __|  _| . | | | | . | -_|  _|")
-	logger.Info("|_|_|_|___|_| |__,|_| |__|  |_| |___|\\_/|_|___|___|_|")
-	logger.Infof("                     Copyright © %d-%d Half_nothing", global.BeginYear, time.Now().Year())
-	logger.Infof("                                   MetarProvider v%s", global.AppVersion)
+	lg.Info(" _____     _           _____             _")
+	lg.Info("|     |___| |_ ___ ___|   __|___ ___ _ _|_|___ ___")
+	lg.Info("| | | | -_|  _| .'|  _|__   | -_|  _| | | |  _| -_|")
+	lg.Info("|_|_|_|___|_| |__,|_| |_____|___|_|  \\_/|_|___|___|")
+	lg.Infof("                     Copyright © %d-%d Half_nothing", global.BeginYear, time.Now().Year())
+	lg.Infof("                                   MetarProvider v%s", g.AppVersion)
 
-	cleaner := cleanerImpl.NewCleaner(logger)
-	cleaner.Init()
+	cl := cleaner.NewCleaner(lg)
+	cl.Init()
 
-	metarManagerMemoryCache := cache.NewMemoryCache[*string](*global.CacheCleanInterval)
-	cleaner.Add("Metar Cache", func(ctx context.Context) error {
+	metarManagerMemoryCache := cache.NewMemoryCache[*string](*g.CacheCleanInterval)
+	cl.Add("Metar Cache", func(ctx context.Context) error {
 		metarManagerMemoryCache.Close()
 		return nil
 	})
 	metarManager := metar.NewManager(
-		logger,
-		utils.Filter(applicationConfig.ProviderConfigs, func(providerConfig *config.ProviderConfig) bool {
-			return providerConfig.Type == config.ProviderTypeMetar.Value
+		lg,
+		utils.Filter(applicationConfig.ProviderConfigs, func(providerConfig *c.ProviderConfig) bool {
+			return providerConfig.Type == c.ProviderTypeMetar.Value
 		}),
 		metarManagerMemoryCache,
 	)
 
-	tafManagerMemoryCache := cache.NewMemoryCache[*string](*global.CacheCleanInterval)
-	cleaner.Add("Taf Cache", func(ctx context.Context) error {
+	tafManagerMemoryCache := cache.NewMemoryCache[*string](*g.CacheCleanInterval)
+	cl.Add("Taf Cache", func(ctx context.Context) error {
 		tafManagerMemoryCache.Close()
 		return nil
 	})
 	tafManager := metar.NewManager(
-		logger,
-		utils.Filter(applicationConfig.ProviderConfigs, func(providerConfig *config.ProviderConfig) bool {
-			return providerConfig.Type == config.ProviderTypeTaf.Value
+		lg,
+		utils.Filter(applicationConfig.ProviderConfigs, func(providerConfig *c.ProviderConfig) bool {
+			return providerConfig.Type == c.ProviderTypeTaf.Value
 		}),
 		tafManagerMemoryCache,
 	)
 
 	applicationContent := content.NewApplicationContentBuilder().
 		SetConfigManager(configManager).
-		SetCleaner(cleaner).
-		SetLogger(logger).
+		SetCleaner(cl).
+		SetLogger(lg).
 		SetMetarManager(metarManager).
 		SetTafManager(tafManager).
 		Build()
@@ -97,14 +93,14 @@ func main() {
 			address := fmt.Sprintf("%s:%d", applicationConfig.ServerConfig.GrpcServerConfig.Host, applicationConfig.ServerConfig.GrpcServerConfig.Port)
 			lis, err := net.Listen("tcp", address)
 			if err != nil {
-				logger.Fatalf("gRPC fail to listen: %v", err)
+				lg.Fatalf("gRPC fail to listen: %v", err)
 				return
 			}
 			s := grpc.NewServer()
-			grpcServer := grpcImpl.NewMetarServer(logger, metarManager, tafManager)
+			grpcServer := grpcImpl.NewMetarServer(lg, metarManager, tafManager)
 			pb.RegisterMetarServer(s, grpcServer)
 			reflection.Register(s)
-			cleaner.Add("gRPC Server", func(ctx context.Context) error {
+			cl.Add("gRPC Server", func(ctx context.Context) error {
 				timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 				defer cancel()
 				cleanOver := make(chan struct{})
@@ -119,9 +115,9 @@ func main() {
 				}
 				return nil
 			})
-			logger.Infof("gRPC server listening at %v", lis.Addr())
+			lg.Infof("gRPC server listening at %v", lis.Addr())
 			if err := s.Serve(lis); err != nil {
-				logger.Fatalf("gRPC failed to serve: %v", err)
+				lg.Fatalf("gRPC failed to serve: %v", err)
 				return
 			}
 		}()
@@ -129,5 +125,25 @@ func main() {
 
 	go server.StartServer(applicationContent)
 
-	cleaner.Wait()
+	version, _ := global.NewVersion(g.AppVersion)
+	var port int
+	if applicationConfig.ServerConfig.GrpcServerConfig.Enable {
+		port = applicationConfig.ServerConfig.GrpcServerConfig.Port
+	} else {
+		port = applicationConfig.ServerConfig.HttpServerConfig.Port
+	}
+	service := discovery.NewServiceDiscovery(
+		lg,
+		"metar-service",
+		port,
+		version,
+	)
+	if err := service.Start(); err != nil {
+		lg.Fatalf("fail to start service discovery: %v", err)
+		cl.Clean()
+		return
+	}
+	cl.Add("Service Discovery", service.Stop)
+
+	cl.Wait()
 }

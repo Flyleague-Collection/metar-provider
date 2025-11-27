@@ -8,11 +8,11 @@ type ServerConfig struct {
 	GrpcServerConfig *GrpcServerConfig `yaml:"grpc"`
 }
 
-func defaultServerConfig() *ServerConfig {
-	return &ServerConfig{
-		HttpServerConfig: defaultHttpServerConfig(),
-		GrpcServerConfig: defaultGrpcServerConfig(),
-	}
+func (s *ServerConfig) InitDefaults() {
+	s.HttpServerConfig = &HttpServerConfig{}
+	s.HttpServerConfig.InitDefaults()
+	s.GrpcServerConfig = &GrpcServerConfig{}
+	s.GrpcServerConfig.InitDefaults()
 }
 
 func (s *ServerConfig) Verify() (bool, error) {

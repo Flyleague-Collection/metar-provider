@@ -3,10 +3,11 @@ package config
 
 import (
 	"fmt"
-	"metar-provider/src/interfaces/metar"
-	decoderImpl "metar-provider/src/metar/decoder"
-	"metar-provider/src/utils"
+	"metar-service/src/interfaces/metar"
+	decoderImpl "metar-service/src/metar/decoder"
 	"strings"
+
+	"half-nothing.cn/service-core/utils"
 )
 
 type ProviderConfig struct {
@@ -37,6 +38,16 @@ var (
 )
 
 var DecoderTypes = utils.NewEnums(DecoderTypeRaw, DecoderTypeHtml, DecoderTypeJson)
+
+func (p *ProviderConfig) InitDefaults() {
+	p.Type = "metar"
+	p.Name = "aviationweather"
+	p.Target = "https://aviationweather.gov/api/data/metar?ids=%s"
+	p.Decoder = "raw"
+	p.Selector = ""
+	p.Reverse = false
+	p.Multiline = ""
+}
 
 func (p *ProviderConfig) Verify() (bool, error) {
 	if p.Type == "" {

@@ -2,10 +2,12 @@
 package content
 
 import (
-	"metar-provider/src/interfaces/cleaner"
-	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
+	c "metar-service/src/interfaces/config"
+	"metar-service/src/interfaces/metar"
+
+	"half-nothing.cn/service-core/interfaces/cleaner"
+	"half-nothing.cn/service-core/interfaces/config"
+	"half-nothing.cn/service-core/interfaces/logger"
 )
 
 type ApplicationContentBuilder struct {
@@ -18,7 +20,7 @@ func NewApplicationContentBuilder() *ApplicationContentBuilder {
 	}
 }
 
-func (builder *ApplicationContentBuilder) SetConfigManager(configManager config.ManagerInterface) *ApplicationContentBuilder {
+func (builder *ApplicationContentBuilder) SetConfigManager(configManager config.ManagerInterface[*c.Config]) *ApplicationContentBuilder {
 	builder.content.configManager = configManager
 	return builder
 }

@@ -2,17 +2,17 @@
 package metar
 
 import (
-	"metar-provider/src/interfaces/cache"
-	"metar-provider/src/interfaces/config"
-	"metar-provider/src/interfaces/global"
-	"metar-provider/src/interfaces/logger"
-	"metar-provider/src/interfaces/metar"
-	"metar-provider/src/utils"
+	"metar-service/src/interfaces/config"
+	"metar-service/src/interfaces/global"
+	"metar-service/src/interfaces/metar"
 	"strings"
 	"sync"
 	"time"
 
 	"golang.org/x/sync/singleflight"
+	"half-nothing.cn/service-core/interfaces/cache"
+	"half-nothing.cn/service-core/interfaces/logger"
+	"half-nothing.cn/service-core/utils"
 )
 
 type Manager struct {

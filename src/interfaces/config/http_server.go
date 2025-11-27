@@ -9,12 +9,10 @@ type HSTSConfig struct {
 	IncludeSubdomains bool `yaml:"include_subdomains"`
 }
 
-func defaultHSTSConfig() *HSTSConfig {
-	return &HSTSConfig{
-		Enable:            false,
-		MaxAge:            5184000,
-		IncludeSubdomains: false,
-	}
+func (h *HSTSConfig) InitDefaults() {
+	h.Enable = false
+	h.MaxAge = 5184000
+	h.IncludeSubdomains = false
 }
 
 func (h *HSTSConfig) Verify() (bool, error) {
@@ -35,14 +33,13 @@ type SSLConfig struct {
 	HSTSConfig *HSTSConfig `yaml:"hsts"`
 }
 
-func defaultSSLConfig() *SSLConfig {
-	return &SSLConfig{
-		Enable:     false,
-		Cert:       "",
-		Key:        "",
-		ForceHttps: false,
-		HSTSConfig: defaultHSTSConfig(),
-	}
+func (s *SSLConfig) InitDefaults() {
+	s.Enable = false
+	s.Cert = ""
+	s.Key = ""
+	s.ForceHttps = false
+	s.HSTSConfig = &HSTSConfig{}
+	s.HSTSConfig.InitDefaults()
 }
 
 func (s *SSLConfig) Verify() (bool, error) {
@@ -72,17 +69,16 @@ type HttpServerConfig struct {
 	SSLConfig *SSLConfig `yaml:"ssl"`
 }
 
-func defaultHttpServerConfig() *HttpServerConfig {
-	return &HttpServerConfig{
-		Enable:    true,
-		Host:      "0.0.0.0",
-		Port:      8080,
-		BodyLimit: "5M",
-		RateLimit: 20,
-		ProxyType: 0,
-		TrustIps:  []string{"0.0.0.0/0"},
-		SSLConfig: defaultSSLConfig(),
-	}
+func (h *HttpServerConfig) InitDefaults() {
+	h.Enable = true
+	h.Host = "0.0.0.0"
+	h.Port = 8080
+	h.BodyLimit = "5M"
+	h.RateLimit = 20
+	h.ProxyType = 0
+	h.TrustIps = []string{"0.0.0.0/0"}
+	h.SSLConfig = &SSLConfig{}
+	h.SSLConfig.InitDefaults()
 }
 
 func (h *HttpServerConfig) Verify() (bool, error) {

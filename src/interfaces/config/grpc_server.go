@@ -9,12 +9,10 @@ type GrpcServerConfig struct {
 	Port   int    `yaml:"port"`
 }
 
-func defaultGrpcServerConfig() *GrpcServerConfig {
-	return &GrpcServerConfig{
-		Enable: true,
-		Host:   "0.0.0.0",
-		Port:   8081,
-	}
+func (g *GrpcServerConfig) InitDefaults() {
+	g.Enable = true
+	g.Host = "0.0.0.0"
+	g.Port = 8081
 }
 
 func (g *GrpcServerConfig) Verify() (bool, error) {
