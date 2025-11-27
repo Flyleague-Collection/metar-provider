@@ -11,17 +11,14 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags="-w -s" -o /build/metar-provider .
+RUN go build -ldflags="-w -s" -tags "http" -o /build/metar-service .
 
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /metar-provider
+WORKDIR /metar-service
 
-COPY --from=builder /build/metar-provider .
+COPY --from=builder /build/metar-service .
 
-EXPOSE 8080
-EXPOSE 8081
-
-ENTRYPOINT ["./metar-provider"]
+ENTRYPOINT ["./metar-service"]

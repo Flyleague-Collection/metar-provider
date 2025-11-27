@@ -1,21 +1,20 @@
 services:
   # 服务名
-  metar-provider:
+  metar-service:
     # 使用的镜像
-    image: halfnothing/metar-provider:latest
+    image: halfnothing/metar-service:latest
     # 容器名称
-    container_name: metar-provider
+    container_name: metar-service
     # 端口映射
     # 宿主机端口:容器端口
     networks:
       - main
     ports:
       - "8080:8080"
-      - "8081:8081"
     # 挂载卷列表
     volumes:
-      - ./logs:/metar-provider/logs
-      - ./config.yaml:/metar-provider/config.yaml
+      - ./logs:/metar-service/logs
+      - ./config.yaml:/metar-service/config.yaml
     # 重启模式
     restart: always
 
