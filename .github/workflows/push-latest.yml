@@ -8,6 +8,7 @@ on:
       - src/**
       - main.go
       - go.mod
+      - Dockerfile
   pull_request:
     branches:
       - "main"

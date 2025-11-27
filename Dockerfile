@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags="-w -s" -tags "http" -o /build/metar-service .
+RUN go build -ldflags="-w -s" -tags "http grpc" -o /build/metar-service .
 
 FROM alpine:latest
 
