@@ -88,7 +88,10 @@ func main() {
 		SetTafManager(tafManager).
 		Build()
 
+	go server.StartServer(applicationContent)
+
 	if applicationConfig.ServerConfig.GrpcServerConfig.Enable {
+		started := make(chan struct{})
 		go func() {
 			address := fmt.Sprintf("%s:%d", applicationConfig.ServerConfig.GrpcServerConfig.Host, applicationConfig.ServerConfig.GrpcServerConfig.Port)
 			lis, err := net.Listen("tcp", address)
@@ -116,34 +119,28 @@ func main() {
 				return nil
 			})
 			lg.Infof("gRPC server listening at %v", lis.Addr())
+			close(started)
 			if err := s.Serve(lis); err != nil {
 				lg.Fatalf("gRPC failed to serve: %v", err)
 				return
 			}
 		}()
-	}
 
-	go server.StartServer(applicationContent)
-
-	version, _ := global.NewVersion(g.AppVersion)
-	var port int
-	if applicationConfig.ServerConfig.GrpcServerConfig.Enable {
-		port = applicationConfig.ServerConfig.GrpcServerConfig.Port
-	} else {
-		port = applicationConfig.ServerConfig.HttpServerConfig.Port
+		<-started
+		version, _ := global.NewVersion(g.AppVersion)
+		service := discovery.NewServiceDiscovery(
+			lg,
+			"metar-service",
+			applicationConfig.ServerConfig.GrpcServerConfig.Port,
+			version,
+		)
+		if err := service.Start(); err != nil {
+			lg.Fatalf("fail to start service discovery: %v", err)
+			cl.Clean()
+			return
+		}
+		cl.Add("Service Discovery", service.Stop)
 	}
-	service := discovery.NewServiceDiscovery(
-		lg,
-		"metar-service",
-		port,
-		version,
-	)
-	if err := service.Start(); err != nil {
-		lg.Fatalf("fail to start service discovery: %v", err)
-		cl.Clean()
-		return
-	}
-	cl.Add("Service Discovery", service.Stop)
 
 	cl.Wait()
 }
