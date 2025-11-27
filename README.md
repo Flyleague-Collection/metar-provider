@@ -1,7 +1,8 @@
 # MetarService
 
 [![ReleaseCard]][Release]![ReleaseDataCard]![LastCommitCard]  
-![BuildStateCard]![ProjectLanguageCard]![ProjectLicense]
+![BuildStateCard]![DockerStateCard]
+![ProjectLanguageCard]![ProjectLicense]
 
 MetarService 是一个METAR数据服务，是微服务架构的一部分，用于获取METAR数据
 
@@ -149,7 +150,9 @@ Copyright © 2025 Half_nothing
 
 [LastCommitCard]: https://img.shields.io/github/last-commit/FSD-Universe/metar-service?display_timestamp=committer&style=for-the-badge&logo=github
 
-[BuildStateCard]: https://img.shields.io/github/actions/workflow/status/FSD-Universe/metar-service/go-build.yml?style=for-the-badge&logo=github&label=Full-Build
+[BuildStateCard]: https://img.shields.io/github/actions/workflow/status/FSD-Universe/metar-service/go-build.yml?style=for-the-badge&logo=github&label=Build
+
+[DockerStateCard]: https://img.shields.io/github/actions/workflow/status/FSD-Universe/metar-service/push-latest.yml?style=for-the-badge&logo=docker&label=Push
 
 [ProjectLanguageCard]: https://img.shields.io/github/languages/top/FSD-Universe/metar-service?style=for-the-badge&logo=github
 
