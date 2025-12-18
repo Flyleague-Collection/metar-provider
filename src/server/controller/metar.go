@@ -22,7 +22,7 @@ func NewMetar(
 	service service.MetarInterface,
 ) *Metar {
 	return &Metar{
-		logger:  logger.NewLoggerAdapter(lg, "MetarController"),
+		logger:  logger.NewLoggerAdapter(lg, "metar-controller"),
 		service: service,
 	}
 }
@@ -31,18 +31,23 @@ func (m *Metar) QueryMetar(ctx echo.Context) error {
 	data := &DTO.QueryMetar{}
 
 	if err := ctx.Bind(data); err != nil {
-		m.logger.Errorf("QueryMetar bind param error: %+v", err)
+		m.logger.Errorf("QueryMetar handle fail, parse argument fail, %v", err)
 		return dto.ErrorResponse(ctx, dto.ErrErrorParam)
 	}
 
-	m.logger.Debugf("QueryMetar called with args: %+v", data)
+	m.logger.Debugf("QueryMetar with argument: %#v", data)
+
+	r, err := dto.ValidStruct(data)
+	if err != nil {
+		m.logger.Errorf("QueryMetar handle fail, validate err, %v", err)
+		return dto.ErrorResponse(ctx, dto.ErrServerError)
+	}
+	if r != nil {
+		m.logger.Errorf("QueryMetar handle fail, validate argument fail, %v", r)
+		return dto.ErrorResponse(ctx, r)
+	}
 
 	icaos := strings.Split(data.ICAO, ",")
-
-	if len(icaos) == 0 {
-		m.logger.Errorf("QueryMetar param error icao(%s)", data.ICAO)
-		return dto.ErrorResponse(ctx, dto.ErrInvalidParam)
-	}
 
 	var res *dto.ApiResponse[[]string]
 
@@ -63,18 +68,23 @@ func (m *Metar) QueryTaf(ctx echo.Context) error {
 	data := &DTO.QueryTaf{}
 
 	if err := ctx.Bind(data); err != nil {
-		m.logger.Errorf("QueryTaf bind param error: %+v", err)
+		m.logger.Errorf("QueryTaf handle fail, parse argument fail, %v", err)
 		return dto.ErrorResponse(ctx, dto.ErrErrorParam)
 	}
 
-	m.logger.Debugf("QueryTaf called with args: %+v", data)
+	m.logger.Debugf("QueryTaf with argument: %#v", data)
+
+	r, err := dto.ValidStruct(data)
+	if err != nil {
+		m.logger.Errorf("QueryTaf handle fail, validate err, %v", err)
+		return dto.ErrorResponse(ctx, dto.ErrServerError)
+	}
+	if r != nil {
+		m.logger.Errorf("QueryTaf handle fail, validate argument fail, %v", r)
+		return dto.ErrorResponse(ctx, r)
+	}
 
 	icaos := strings.Split(data.ICAO, ",")
-
-	if len(icaos) == 0 {
-		m.logger.Errorf("QueryTaf param error icao(%s)", data.ICAO)
-		return dto.ErrorResponse(ctx, dto.ErrInvalidParam)
-	}
 
 	var res *dto.ApiResponse[[]string]
 

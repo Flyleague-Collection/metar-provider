@@ -24,7 +24,7 @@ func NewMetarServer(
 	tafManager metar.ManagerInterface,
 ) *MetarServer {
 	return &MetarServer{
-		logger:       logger.NewLoggerAdapter(lg, "GrpcMetarService"),
+		logger:       logger.NewLoggerAdapter(lg, "grpc-server"),
 		metarManager: metarManager,
 		tafManager:   tafManager,
 	}

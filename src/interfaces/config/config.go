@@ -1,21 +1,28 @@
 // Package config
 package config
 
-import "fmt"
+import (
+	"fmt"
+
+	"half-nothing.cn/service-core/interfaces/config"
+)
 
 type Config struct {
-	GlobalConfig    *GlobalConfig     `yaml:"global"`
-	ServerConfig    *ServerConfig     `yaml:"server"`
-	ProviderConfigs []*ProviderConfig `yaml:"provider"`
+	GlobalConfig    *GlobalConfig           `yaml:"global"`
+	ServerConfig    *config.ServerConfig    `yaml:"server"`
+	ProviderConfigs []*ProviderConfig       `yaml:"provider"`
+	TelemetryConfig *config.TelemetryConfig `yaml:"telemetry"`
 }
 
 func (c *Config) InitDefaults() {
 	c.GlobalConfig = &GlobalConfig{}
 	c.GlobalConfig.InitDefaults()
-	c.ServerConfig = &ServerConfig{}
+	c.ServerConfig = &config.ServerConfig{}
 	c.ServerConfig.InitDefaults()
 	c.ProviderConfigs = []*ProviderConfig{{}}
 	c.ProviderConfigs[0].InitDefaults()
+	c.TelemetryConfig = &config.TelemetryConfig{}
+	c.TelemetryConfig.InitDefaults()
 }
 
 func (c *Config) Verify() (bool, error) {
@@ -38,6 +45,9 @@ func (c *Config) Verify() (bool, error) {
 		if ok, err := provider.Verify(); !ok {
 			return false, err
 		}
+	}
+	if ok, err := c.TelemetryConfig.Verify(); !ok {
+		return false, err
 	}
 	return true, nil
 }

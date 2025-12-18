@@ -22,7 +22,11 @@ func (h *HtmlDecoder) Decode(raw []byte, selector string, reverse bool, multilin
 	}
 	// 如果只选取到了一个元素
 	if data.Length() == 1 {
-		text := data.Get(0).FirstChild.Data
+		child := data.Get(0).FirstChild
+		if child == nil {
+			return false, "", nil
+		}
+		text := child.Data
 		// 如果multiline为空
 		if multiline == "" {
 			return true, text, nil

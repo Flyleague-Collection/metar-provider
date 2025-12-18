@@ -18,17 +18,17 @@ import (
 type Manager struct {
 	logger       logger.Interface
 	providers    []metar.ProviderInterface
-	cache        cache.Interface[*string]
+	cache        cache.Interface[string, *string]
 	requestGroup singleflight.Group
 }
 
 func NewManager(
 	lg logger.Interface,
 	providerConfigs []*config.ProviderConfig,
-	cache cache.Interface[*string],
+	cache cache.Interface[string, *string],
 ) *Manager {
 	manager := &Manager{
-		logger:    logger.NewLoggerAdapter(lg, "SourceManager"),
+		logger:    logger.NewLoggerAdapter(lg, "source-manager"),
 		providers: make([]metar.ProviderInterface, 0),
 		cache:     cache,
 	}

@@ -23,7 +23,7 @@ const (
 
 type MetarQuery struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Icao          []string               `protobuf:"bytes,1,rep,name=icao" json:"icao,omitempty"`
+	Icao          []string               `protobuf:"bytes,1,rep,name=icao,proto3" json:"icao,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -67,7 +67,7 @@ func (x *MetarQuery) GetIcao() []string {
 
 type MetarReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Metar         []string               `protobuf:"bytes,1,rep,name=metar" json:"metar,omitempty"`
+	Metar         []string               `protobuf:"bytes,1,rep,name=metar,proto3" json:"metar,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -111,7 +111,7 @@ func (x *MetarReply) GetMetar() []string {
 
 type TafQuery struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Icao          []string               `protobuf:"bytes,1,rep,name=icao" json:"icao,omitempty"`
+	Icao          []string               `protobuf:"bytes,1,rep,name=icao,proto3" json:"icao,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -155,7 +155,7 @@ func (x *TafQuery) GetIcao() []string {
 
 type TafReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Taf           []string               `protobuf:"bytes,1,rep,name=taf" json:"taf,omitempty"`
+	Taf           []string               `protobuf:"bytes,1,rep,name=taf,proto3" json:"taf,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -214,7 +214,7 @@ const file_metar_proto_rawDesc = "" +
 	"\x03taf\x18\x01 \x03(\tR\x03taf2e\n" +
 	"\x05Metar\x120\n" +
 	"\bGetMetar\x12\x11.metar.MetarQuery\x1a\x11.metar.MetarReply\x12*\n" +
-	"\x06GetTaf\x12\x0f.metar.TafQuery\x1a\x0f.metar.TafReplyB\x15Z\x13src/interfaces/grpcb\beditionsp\xe8\a"
+	"\x06GetTaf\x12\x0f.metar.TafQuery\x1a\x0f.metar.TafReplyB\x15Z\x13src/interfaces/grpcb\x06proto3"
 
 var (
 	file_metar_proto_rawDescOnce sync.Once

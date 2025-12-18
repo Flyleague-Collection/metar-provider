@@ -21,7 +21,7 @@ func NewMetar(
 	tafManager metar.ManagerInterface,
 ) *Metar {
 	return &Metar{
-		logger:       logger.NewLoggerAdapter(lg, "MetarService"),
+		logger:       logger.NewLoggerAdapter(lg, "metar-service"),
 		metarManager: metarManager,
 		tafManager:   tafManager,
 	}
@@ -44,9 +44,6 @@ func (m *Metar) QueryMetar(icao string) *dto.ApiResponse[[]string] {
 }
 
 func (m *Metar) BatchQueryMetar(icaos []string) *dto.ApiResponse[[]string] {
-	if len(icaos) == 0 {
-		return dto.NewApiResponse[[]string](dto.ErrInvalidParam, nil)
-	}
 	data := m.metarManager.BatchQuery(icaos)
 	return dto.NewApiResponse[[]string](dto.SuccessHandleRequest, data)
 }
@@ -68,9 +65,6 @@ func (m *Metar) QueryTaf(icao string) *dto.ApiResponse[[]string] {
 }
 
 func (m *Metar) BatchQueryTaf(icaos []string) *dto.ApiResponse[[]string] {
-	if len(icaos) == 0 {
-		return dto.NewApiResponse[[]string](dto.ErrInvalidParam, nil)
-	}
 	data := m.tafManager.BatchQuery(icaos)
 	return dto.NewApiResponse[[]string](dto.SuccessHandleRequest, data)
 }
