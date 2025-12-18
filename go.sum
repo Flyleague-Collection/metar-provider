@@ -211,3 +211,5 @@ gorm.io/gorm v1.31.1 h1:7CA8FTFz/gRfgqgpeKIBcervUn3xSyPUmr6B2WXJ7kg=
 gorm.io/gorm v1.31.1/go.mod h1:XyQVbO2k6YkOis7C2437jSit3SsDK72s7n7rsSHd+Gs=
 half-nothing.cn/service-core v1.9.4 h1:PCrKy78bzD7s0NFbZLE2zmcilXlbUIR0U3CtH/OOJ5c=
 half-nothing.cn/service-core v1.9.4/go.mod h1:u21K+xnuR6xSirJScw6zvbSicwkoVTd91VCv1cpontw=
+half-nothing.cn/service-core v1.9.5 h1:ZWKwR11AlwhzcfeCOm68g4R/cdQYJ5TjSAKTb8vE07Y=
+half-nothing.cn/service-core v1.9.5/go.mod h1:u21K+xnuR6xSirJScw6zvbSicwkoVTd91VCv1cpontw=
