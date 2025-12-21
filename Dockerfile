@@ -14,7 +14,9 @@ RUN go build -ldflags="-w -s" -tags "http grpc telemetry" -o /build/metar-servic
 
 FROM alpine:latest AS runtime
 
+RUN apk update
 RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add curl
 
 WORKDIR /service
 
