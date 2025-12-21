@@ -26,9 +26,7 @@ func StartHttpServer(content *content.ApplicationContent) {
 	e.Logger.SetOutput(io.Discard)
 	e.Logger.SetLevel(log.OFF)
 
-	httpConfig := c.ServerConfig.HttpServerConfig
-
-	h.SetEchoConfig(lg, e, httpConfig, nil)
+	h.SetEchoConfig(lg, e, c.ServerConfig.HttpServerConfig, nil)
 
 	if c.TelemetryConfig.HttpServerTrace {
 		h.SetTelemetry(e, c.TelemetryConfig)
@@ -45,5 +43,5 @@ func StartHttpServer(content *content.ApplicationContent) {
 	h.SetUnmatchedRoute(e)
 	h.SetCleaner(content.Cleaner(), e)
 
-	h.Serve(lg, e, httpConfig)
+	h.Serve(lg, e, c.ServerConfig.HttpServerConfig)
 }
