@@ -29,7 +29,7 @@ func StartHttpServer(content *content.ApplicationContent) {
 	h.SetEchoConfig(lg, e, c.ServerConfig.HttpServerConfig, nil)
 
 	if c.TelemetryConfig.HttpServerTrace {
-		h.SetTelemetry(e, c.TelemetryConfig)
+		h.SetTelemetry(e, c.TelemetryConfig, h.SkipperHealthCheck)
 	}
 
 	metarController := controllerImpl.NewMetar(lg, serviceImpl.NewMetar(lg, content.MetarManager(), content.TafManager()))
