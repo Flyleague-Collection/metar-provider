@@ -101,7 +101,7 @@ cd metar-service
 # 确认安装了go编译器并且版本>=1.24.6
 go version
 # 运行go build命令
-go build -ldflags="-w -s" -tags "http grpc" .
+go build -ldflags="-w -s" -tags "http telemetry" .
 # 对于windows系统, 可执行文件为metar-service.exe
 # 对于linux系统, 可执行文件为metar-service
 # [可选]使用upx压缩可执行文件
