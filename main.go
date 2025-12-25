@@ -111,6 +111,11 @@ func main() {
 		go grpcUtils.StartGrpcServer(lg, cl, applicationConfig.ServerConfig.GrpcServerConfig, started, initFunc)
 	}
 
+	if ok := <-started; !ok {
+		lg.Fatalf("fail to start grpc server")
+		return
+	}
+
 	consulClient := discovery.NewConsulClient(lg, applicationConfig.GlobalConfig.Discovery, g.AppVersion)
 
 	if err := consulClient.RegisterServer(); err != nil {

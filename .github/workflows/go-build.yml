@@ -21,13 +21,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: '1.25.5'
 
       - name: Set short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Build
-        run: go build -ldflags="-w -s" -tags "http grpc telemetry" -o metar-service-linux-${{ env.SHORT_SHA }} .
+        run: go build -ldflags="-w -s" -tags "http telemetry" -o metar-service-linux-${{ env.SHORT_SHA }} .
       - name: Run UPX
         uses: crazy-max/ghaction-upx@v3
         with:
@@ -49,10 +49,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: '1.25.5'
 
       - name: Build
-        run: go build -ldflags="-w -s" -tags "http grpc telemetry" -o metar-service-windows-${{ github.sha }}.exe .
+        run: go build -ldflags="-w -s" -tags "http telemetry" -o metar-service-windows-${{ github.sha }}.exe .
       - name: Run UPX
         uses: crazy-max/ghaction-upx@v3
         with:

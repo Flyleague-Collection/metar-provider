@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags="-w -s" -tags "http grpc telemetry" -o /build/metar-service .
+RUN go build -ldflags="-w -s" -tags "http telemetry" -o /build/metar-service .
 
 FROM alpine:latest AS runtime
 

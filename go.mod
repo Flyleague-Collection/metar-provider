@@ -10,7 +10,7 @@ require (
 	golang.org/x/sync v0.19.0
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
-	half-nothing.cn/service-core v0.6.0
+	half-nothing.cn/service-core v0.6.4
 )
 
 require (
